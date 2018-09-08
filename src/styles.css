@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~normalize.css';
+html, body{
+  height: 100%;
+  font-family: proxima-regular,serif;
+  font-size: 1em;
+}
+@font-face {
+  font-family: 'proxima-regular';
+  src: url('assets/fonts/proxima_nova-alt-regular.ttf');
+}
+
+@font-face {
+  font-family: 'proxima-semibold';
+  src: url('assets/fonts/proxima_nova-semibold.ttf');
+}
+
+@font-face {
+  font-family: 'proxima-bold';
+  src: url('assets/fonts/proxima_nova-alt-bold.ttf');
+}
+.error-message {
+  text-align: center;
+  color: red;
+  font-size: .85em;
+}
