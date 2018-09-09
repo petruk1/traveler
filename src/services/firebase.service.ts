@@ -1,37 +1,40 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from 'angularfire2/auth';
-import {LoginUserdata} from '../shared/interfaces/login-userdata';
+import {LoginUserdata} from '../app/auth/interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
-  private _authError = null;
+  private _authError: object;
 
   constructor(private af: AngularFireAuth) {
   }
 
-  get authError() {
+  public get authError(): object {
     return this._authError;
   }
 
+  public set authError(error: object) {
+    this._authError = error;
+  }
+
   login(data: LoginUserdata): void {
-    console.log(data)
     const {email, password} = data;
     this.af.auth.signInWithEmailAndPassword(email, password)
       .then(() => this._authError = null)
-      .catch(err => this._authError = err);
+      .catch((err: object) => this.authError = err);
   }
 
-  logout(): void {
-    this.af.auth.signOut().catch(err => console.log(err));
+  public logout(): void {
+    this.af.auth.signOut();
   }
 
-  isEmailAvailable(email): Promise<any> {
+  public isEmailAvailable(email: string): Promise<any> {
     return this.af.auth.fetchSignInMethodsForEmail(email);
   }
 
-  create(data: LoginUserdata): void {
+  public create(data: LoginUserdata): void {
     const {email, password, name, surname} = data;
     this.af.auth.createUserWithEmailAndPassword(email, password)
       .then(() => this.login(data))

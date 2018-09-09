@@ -1,19 +1,19 @@
 <form [formGroup]="signInForm">
   <h3>Sign in</h3>
   <div class="inputs">
-    <label>Username</label>
+    <label>Email</label>
     <input formControlName="email">
     <label>Password</label>
-    <input formControlName="password">
+    <input type="password"
+           formControlName="password">
   </div>
   <div class="error-message" *ngIf="authErrors">
     Username or password is wrong!
   </div>
   <div class="actions">
-    <button
-      [disabled]="this.signInForm.invalid"
-      (click)="login(this.signInForm.value)"
-    >Sign in
+    <button [disabled]="this.signInForm.invalid"
+            (click)="login(this.signInForm.value)">
+      Sign in
     </button>
     <a routerLink="../sign-up">Create account!</a>
   </div>

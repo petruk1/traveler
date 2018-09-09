@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FirebaseService} from '../../../services/firebase.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {LoginUserdata} from '../../../shared/interfaces/login-userdata';
+import {LoginUserdata} from '../interfaces';
 
 @Component({
   selector: 'app-login-form',
@@ -15,22 +15,22 @@ export class LoginFormComponent implements OnInit {
               private formBuilder: FormBuilder) {
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.signInForm = this.formBuilder.group({
-      email: ['test@gmail.com', [
+      email: ['', [
         Validators.required,
         Validators.email]],
-      password: ['test@gmail.com', [
+      password: ['', [
         Validators.required,
-        Validators.minLength(5)]]
+        Validators.minLength(6)]]
     });
   }
 
-  login(data: LoginUserdata) {
+  public login(data: LoginUserdata): void {
     this.fbService.login(data);
   }
 
-  get authErrors() {
+  public get authErrors(): object {
     return this.fbService.authError;
   }
 
