@@ -7,6 +7,10 @@ import {AngularFireAuthModule} from 'angularfire2/auth';
 import {RouterModule, Routes} from '@angular/router';
 import {ReactiveFormsModule} from '@angular/forms';
 import {AuthModule} from './auth/auth.module';
+import { WorkingAreaComponent } from './working-area/working-area.component';
+import { AsideBarComponent } from './working-area/aside-bar/aside-bar.component';
+import {WorkingAreaModule} from './working-area/working-area.module';
+import {AngularFireDatabaseModule} from 'angularfire2/database';
 
 const APP_ROUTES: Routes = [
   {
@@ -22,10 +26,11 @@ const APP_ROUTES: Routes = [
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
+    AngularFireDatabaseModule,
     ReactiveFormsModule,
     AuthModule,
-    RouterModule.forRoot(APP_ROUTES)
-
+    WorkingAreaModule,
+   // RouterModule.forRoot(APP_ROUTES)
   ],
   bootstrap: [AppComponent]
 })

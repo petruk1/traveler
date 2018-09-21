@@ -1,0 +1,21 @@
+$aside-border-radius: 10px;
+$host-background: rgba(192, 231, 234, .5);
+
+:host {
+  display: block;
+  background-color: $host-background;
+  width: 300px;
+  border-top-right-radius: $aside-border-radius;
+  border-bottom-right-radius: $aside-border-radius;
+  padding: 10px;
+
+  .point {
+    padding: 5px 0 5px 10px;
+    border-radius: 3px;
+    margin: 3px auto;
+    background-color: blanchedalmond;
+    cursor: pointer;
+  }
+
+}
+
