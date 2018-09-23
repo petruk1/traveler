@@ -1,13 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {AngularFireAuth} from 'angularfire2/auth';
 import {LoginUserdata} from '../app/auth/interfaces';
 import {AngularFireDatabase} from 'angularfire2/database';
 import {Subject} from 'rxjs/index';
+import {User} from 'firebase';
 
-export class Item {
-  body: string;
-  uid?: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +12,12 @@ export class Item {
 export class FirebaseService {
   private _authError: object;
   private userId: string;
-  points: Subject<object[]> = new Subject();
+  public points: Subject<object[]> = new Subject();
 
   constructor(private fireAuth: AngularFireAuth,
-              private fireDatabase: AngularFireDatabase) {
-    this.fireAuth.authState.subscribe((user: any) => {
+              private fireDatabase: AngularFireDatabase,
+              private zone: NgZone) {
+    this.fireAuth.authState.subscribe((user: User) => {
       if (user) {
         this.userId = user.uid;
         this.loadPoints();
@@ -27,14 +25,16 @@ export class FirebaseService {
     });
   }
 
-  public createPoint(e: any): void {
-    e.name = 'mock';
-    this.fireDatabase.database.ref(`${this.userId}/points`).push(e);
+  public createPoint(data: any): void {
+    data.name = 'mock';
+    this.fireDatabase.database.ref(`${this.userId}/points`).push(data);
   }
 
   private loadPoints(): void {
     this.fireDatabase.database.ref(`${this.userId}/points`)
-      .on('value', x => this.points.next(Object.values(x.val())));
+      .on('value', x => {
+        this.zone.run(() => this.points.next(Object.values(x.val())));
+      });
   }
 
   public get authError(): object {
