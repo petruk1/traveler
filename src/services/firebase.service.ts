@@ -1,14 +1,40 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {AngularFireAuth} from 'angularfire2/auth';
 import {LoginUserdata} from '../app/auth/interfaces';
+import {AngularFireDatabase} from 'angularfire2/database';
+import {Subject} from 'rxjs/index';
+import {User} from 'firebase';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
   private _authError: object;
+  private userId: string;
+  public points: Subject<object[]> = new Subject();
 
-  constructor(private af: AngularFireAuth) {
+  constructor(private fireAuth: AngularFireAuth,
+              private fireDatabase: AngularFireDatabase,
+              private zone: NgZone) {
+    this.fireAuth.authState.subscribe((user: User) => {
+      if (user) {
+        this.userId = user.uid;
+        this.loadPoints();
+      }
+    });
+  }
+
+  public createPoint(data: any): void {
+    data.name = 'mock';
+    this.fireDatabase.database.ref(`${this.userId}/points`).push(data);
+  }
+
+  private loadPoints(): void {
+    this.fireDatabase.database.ref(`${this.userId}/points`)
+      .on('value', x => {
+        this.zone.run(() => this.points.next(Object.values(x.val())));
+      });
   }
 
   public get authError(): object {
@@ -19,26 +45,26 @@ export class FirebaseService {
     this._authError = error;
   }
 
-  login(data: LoginUserdata): void {
+  public login(data: LoginUserdata): void {
     const {email, password} = data;
-    this.af.auth.signInWithEmailAndPassword(email, password)
+    this.fireAuth.auth.signInWithEmailAndPassword(email, password)
       .then(() => this._authError = null)
       .catch((err: object) => this.authError = err);
   }
 
   public logout(): void {
-    this.af.auth.signOut();
+    this.fireAuth.auth.signOut();
   }
 
   public isEmailAvailable(email: string): Promise<any> {
-    return this.af.auth.fetchSignInMethodsForEmail(email);
+    return this.fireAuth.auth.fetchSignInMethodsForEmail(email);
   }
 
   public create(data: LoginUserdata): void {
     const {email, password, name, surname} = data;
-    this.af.auth.createUserWithEmailAndPassword(email, password)
+    this.fireAuth.auth.createUserWithEmailAndPassword(email, password)
       .then(() => this.login(data))
-      .then(() => this.af.auth.currentUser
+      .then(() => this.fireAuth.auth.currentUser
         .updateProfile({displayName: `${name} ${surname}`, photoURL: null}));
   }
 
