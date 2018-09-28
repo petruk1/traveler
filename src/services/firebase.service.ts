@@ -24,10 +24,8 @@ export class FirebaseService {
       }
     });
   }
-
-  public createPoint(data: any): void {
-    data.name = 'mock';
-    this.fireDatabase.database.ref(`${this.userId}/points`).push(data);
+  public createPoint(point: Point): void {
+    this.fireDatabase.database.ref(`${this.userId}/points`).push(point);
   }
 
   private loadPoints(): void {

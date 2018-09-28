@@ -24,8 +24,8 @@ export class WorkingAreaComponent implements OnInit, OnDestroy {
       });
   }
 
-  public createPoint(event: google.maps.MouseEvent): void {
-    this.fireService.createPoint({lat: event.latLng.lat(), lng: event.latLng.lng()});
+  public createPoint(point: Point): void {
+    this.fireService.createPoint(point);
   }
 
   public ngOnDestroy(): void {
