@@ -1,6 +1,8 @@
 <input placeholder="Caption"
-       #caption>
+       [formControl]="captionControl">
 <div class="buttons">
-  <button [disabled]="caption.value.length<3" (click)="emitCaption(caption.value)">Confirm</button>
+  <button [disabled]="captionControl?.value?.length<3"
+          (click)="emitCaption()">Confirm
+  </button>
   <button (click)="emitCancel()">Cancel</button>
 </div>

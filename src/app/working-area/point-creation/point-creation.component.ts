@@ -1,19 +1,23 @@
-import {Component, DoCheck, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
+import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-point-creation',
   templateUrl: './point-creation.component.html',
   styleUrls: ['./point-creation.component.scss']
 })
-export class PointCreationComponent implements DoCheck {
-  @Output() caption: EventEmitter<string> = new EventEmitter();
-  @Output() cancel: EventEmitter<boolean> = new EventEmitter();
+export class PointCreationComponent {
+  protected captionControl = new FormControl();
+  @Output()
+  protected caption: EventEmitter<string> = new EventEmitter();
+  @Output()
+  protected cancel: EventEmitter<boolean> = new EventEmitter();
 
-  public emitCaption(caption: string): void {
-    this.caption.emit(caption);
+  public emitCaption(): void {
+    this.caption.emit(this.captionControl.value);
   }
 
-  public emitCancel() {
+  public emitCancel(): void {
     this.cancel.emit(false);
   }
 }

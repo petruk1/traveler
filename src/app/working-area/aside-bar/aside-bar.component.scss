@@ -8,6 +8,7 @@ $host-background: rgba(192, 231, 234, .5);
   border-top-right-radius: $aside-border-radius;
   border-bottom-right-radius: $aside-border-radius;
   padding: 10px;
+  overflow-y: auto;
 
   .point {
     padding: 5px 0 5px 10px;
