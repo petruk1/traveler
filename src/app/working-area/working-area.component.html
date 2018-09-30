@@ -1,4 +1,5 @@
-<app-aside-bar #aside></app-aside-bar>
+<app-aside-bar #aside
+               (pointSelected)="map.setCenter($event)"></app-aside-bar>
 
 <app-map #map
          [points]="points"
