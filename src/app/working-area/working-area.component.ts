@@ -9,9 +9,9 @@ import {MapComponent} from './map/map.component';
   styleUrls: ['./working-area.component.scss']
 })
 export class WorkingAreaComponent implements OnInit, OnDestroy {
+  @ViewChild('map') map: MapComponent;
   protected points: Point[];
   private pointsSubscription: Subscription;
-  @ViewChild('map') map: MapComponent;
 
   constructor(private fireService: FirebaseService) {
   }

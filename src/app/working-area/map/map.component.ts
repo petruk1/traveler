@@ -18,26 +18,29 @@ import {
 export class MapComponent implements AfterViewInit {
   @ViewChild('mapContainer')
   private container: ElementRef;
-  @Output()
-  private rightClick: EventEmitter<Point> = new EventEmitter();
-  private map: google.maps.Map;
-  private markers: google.maps.Marker[] = [];
-  private configs: google.maps.MapOptions = {
-    zoom: 8,
-    center: {lat: 52, lng: 30}
-  };
-  public isPointFormVisible = false;
-  public pointFormPositionTop = 0;
-  public pointFormPositionLeft = 0;
-  private newPoint: Point;
-
-  constructor(private cd: ChangeDetectorRef,
-              private zone: NgZone) {
-  }
 
   @Input()
   public set points(pointsArray: Point[]) {
     this.setMarkersOnMap(pointsArray);
+  }
+
+  @Output()
+  private pointReady: EventEmitter<Point> = new EventEmitter();
+
+  public isPointFormVisible = false;
+  public pointFormPositionTop = 0;
+  public pointFormPositionLeft = 0;
+  private map: google.maps.Map;
+  private markers: google.maps.Marker[] = [];
+  private newPoint: Point;
+  private geocoder = new google.maps.Geocoder();
+  private configs: google.maps.MapOptions = {
+    zoom: 8,
+    center: {lat: 52, lng: 30}
+  };
+
+  constructor(private cd: ChangeDetectorRef,
+              private zone: NgZone) {
   }
 
   public ngAfterViewInit(): void {
@@ -47,13 +50,19 @@ export class MapComponent implements AfterViewInit {
       this.pointFormPositionTop = event.wa.offsetY;
       this.pointFormPositionLeft = event.wa.offsetX;
       this.newPoint = {lng: event.latLng.lng(), lat: event.latLng.lat()};
+      this.geocoder.geocode({location: new google.maps.LatLng(event.latLng.lat(), event.latLng.lng())},
+        (results, status) => {
+          if (status) {
+            this.newPoint.address = results[0].formatted_address;
+          }
+        });
       this.zone.run(() => this.cd.detectChanges());
     });
   }
 
   public createPoint(caption: string): void {
     this.newPoint.name = caption;
-    this.rightClick.emit(this.newPoint);
+    this.pointReady.emit(this.newPoint);
     this.isPointFormVisible = false;
   }
 

@@ -2,5 +2,5 @@
 <app-point-creation *ngIf="isPointFormVisible"
                     [style.top.px]="pointFormPositionTop"
                     [style.left.px]="pointFormPositionLeft"
-                    (caption)="createPoint($event)"
-                    (cancel)="this.isPointFormVisible=$event"></app-point-creation>
+                    (captionReady)="createPoint($event)"
+                    (cancel)="isPointFormVisible=$event"></app-point-creation>

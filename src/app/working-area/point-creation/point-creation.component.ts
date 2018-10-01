@@ -7,14 +7,14 @@ import {FormControl} from '@angular/forms';
   styleUrls: ['./point-creation.component.scss']
 })
 export class PointCreationComponent {
-  protected captionControl = new FormControl();
   @Output()
-  protected caption: EventEmitter<string> = new EventEmitter();
+  protected captionReady: EventEmitter<string> = new EventEmitter();
   @Output()
   protected cancel: EventEmitter<boolean> = new EventEmitter();
+  protected captionControl = new FormControl();
 
   public emitCaption(): void {
-    this.caption.emit(this.captionControl.value);
+    this.captionReady.emit(this.captionControl.value);
   }
 
   public emitCancel(): void {
