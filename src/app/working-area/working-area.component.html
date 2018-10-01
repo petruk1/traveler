@@ -1,19 +1,8 @@
-<app-aside-bar #aside></app-aside-bar>
+<app-aside-bar #aside
+               (pointSelected)="map.setCenter($event)"></app-aside-bar>
 
 <app-map #map
          [points]="points"
-         (rightClick)="createPoint($event)">
-
+         (pointReady)="createPoint($event)">
 </app-map>
 
-
-<!--<x-map [Options]="options"-->
-
-<!--(MapRightClick)="createPoint($event)">-->
-<!--<x-map-marker #map-->
-<!--*ngFor="let point of points"-->
-<!--[Latitude]="point.lat"-->
-<!--[Longitude]="point.lng"-->
-<!--[Label]="'M'">-->
-<!--</x-map-marker>-->
-<!--</x-map>-->

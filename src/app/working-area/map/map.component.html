@@ -1,1 +1,6 @@
 <div #mapContainer></div>
+<app-point-creation *ngIf="isPointFormVisible"
+                    [style.top.px]="pointFormPositionTop"
+                    [style.left.px]="pointFormPositionLeft"
+                    (captionReady)="createPoint($event)"
+                    (cancel)="isPointFormVisible=$event"></app-point-creation>

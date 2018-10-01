@@ -1,5 +1,8 @@
 <div class="points-container">
-  <div class="point" *ngFor="let point of points">
+  <div class="point"
+       *ngFor="let point of points"
+       (click)="onPointSelected(point)"
+       [class.selected]="point===selectedPoint">
     {{point.name}}
   </div>
 

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {FirebaseService} from '../../../services/firebase.service';
 import {Subscription} from 'rxjs/index';
 
@@ -10,6 +10,9 @@ import {Subscription} from 'rxjs/index';
 export class AsideBarComponent implements OnInit, OnDestroy {
   protected points: Point[];
   private pointsSubscription: Subscription;
+  @Output()
+  public pointSelected: EventEmitter<Point> = new EventEmitter();
+  public selectedPoint: Point;
 
   constructor(private fireService: FirebaseService) {
   }
@@ -23,4 +26,10 @@ export class AsideBarComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.pointsSubscription.unsubscribe();
   }
+
+  public onPointSelected(point: Point): void {
+    this.selectedPoint = point;
+    this.pointSelected.emit(this.selectedPoint);
+  }
+
 }
