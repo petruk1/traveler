@@ -70,7 +70,7 @@ export class MapComponent implements AfterViewInit {
     this.map.setCenter(centerLocation);
   }
 
-  private setMarkersOnMap(points: Point[] = []): void {
+  public setMarkersOnMap(points: Point[] = []): void {
     this.markers.forEach((marker: google.maps.Marker) => marker.setMap(null));
     points.forEach((point: Point) => this.markers.push(new google.maps.Marker({position: point, map: this.map})));
   }

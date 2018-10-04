@@ -1,6 +1,8 @@
+<input class="search"
+[formControl]="searchControl">
 <div class="points-container">
   <div class="point"
-       *ngFor="let point of points"
+       *ngFor="let point of filteredPoints"
        (click)="onPointSelected(point)"
        [class.selected]="point===selectedPoint">
     {{point.name}}

@@ -1,6 +1,6 @@
 $aside-border-radius: 10px;
 $host-background: rgba(192, 231, 234, .5);
-
+$search-left-padding: 10px;
 :host {
   display: block;
   background-color: $host-background;
@@ -9,6 +9,13 @@ $host-background: rgba(192, 231, 234, .5);
   border-bottom-right-radius: $aside-border-radius;
   padding: 10px;
   overflow-y: auto;
+
+  .search{
+   border: none;
+    padding: 5px 0 5px 10px;
+    width: calc(100% - 10px);
+    margin: 3px auto;
+  }
 
   .point {
     padding: 5px 0 5px 10px;

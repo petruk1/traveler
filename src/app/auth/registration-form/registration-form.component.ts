@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {CustomValidators} from '../../../shared/validators/custom-validators';
-import {FirebaseService} from '../../../services/firebase.service';
+import {CustomValidators} from '../../shared/validators/custom-validators';
+import {FirebaseService} from '../../services/firebase.service';
 
 @Component({
   selector: 'app-registration-form',

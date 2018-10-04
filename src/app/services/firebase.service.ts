@@ -1,18 +1,17 @@
 import {Injectable, NgZone} from '@angular/core';
 import {AngularFireAuth} from 'angularfire2/auth';
-import {LoginUserdata} from '../app/auth/interfaces';
+import {LoginUserdata} from '../auth/interfaces';
 import {AngularFireDatabase} from 'angularfire2/database';
 import {Subject} from 'rxjs/index';
 import {User} from 'firebase';
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  public points: Subject<object[]> = new Subject();
   private _authError: object;
   private userId: string;
-  public points: Subject<object[]> = new Subject();
 
   constructor(private fireAuth: AngularFireAuth,
               private fireDatabase: AngularFireDatabase,
@@ -24,6 +23,7 @@ export class FirebaseService {
       }
     });
   }
+
   public createPoint(point: Point): void {
     this.fireDatabase.database.ref(`${this.userId}/points`).push(point);
   }
