@@ -7,14 +7,16 @@ import {AngularFireAuthModule} from 'angularfire2/auth';
 import {RouterModule, Routes} from '@angular/router';
 import {ReactiveFormsModule} from '@angular/forms';
 import {AuthModule} from './auth/auth.module';
-import { WorkingAreaComponent } from './working-area/working-area.component';
-import { AsideBarComponent } from './working-area/aside-bar/aside-bar.component';
+import {WorkingAreaComponent} from './working-area/working-area.component';
 import {WorkingAreaModule} from './working-area/working-area.module';
 import {AngularFireDatabaseModule} from 'angularfire2/database';
+import {AuthGuard} from '../guards/auth.guard';
 
 const APP_ROUTES: Routes = [
   {
-    path: '', redirectTo: 'auth', pathMatch: 'full'
+    path: '', redirectTo: '/map', pathMatch: 'full',
+  }, {
+    path: 'map', component: WorkingAreaComponent, canActivate: [AuthGuard]
   }
 ];
 
@@ -30,7 +32,7 @@ const APP_ROUTES: Routes = [
     ReactiveFormsModule,
     AuthModule,
     WorkingAreaModule,
-   // RouterModule.forRoot(APP_ROUTES)
+    RouterModule.forRoot(APP_ROUTES)
   ],
   bootstrap: [AppComponent]
 })
