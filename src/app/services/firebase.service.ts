@@ -9,9 +9,10 @@ import {User} from 'firebase';
   providedIn: 'root'
 })
 export class FirebaseService {
-  public points: Subject<object[]> = new Subject();
+  private pointsSubject: Subject<Point[]> = new Subject();
   private _authError: object;
   private userId: string;
+  public points$ = this.pointsSubject.asObservable();
 
   constructor(private fireAuth: AngularFireAuth,
               private fireDatabase: AngularFireDatabase,
@@ -31,7 +32,7 @@ export class FirebaseService {
   private loadPoints(): void {
     this.fireDatabase.database.ref(`${this.userId}/points`)
       .on('value', x => {
-        this.zone.run(() => this.points.next(Object.values(x.val())));
+        this.zone.run(() => this.pointsSubject.next(Object.values(x.val())));
       });
   }
 

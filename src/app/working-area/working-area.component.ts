@@ -18,7 +18,7 @@ export class WorkingAreaComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.fireService.login({email: 'test@gmail.com', password: 'test@gmail.com'});
-    this.pointsSubscription = this.fireService.points
+    this.pointsSubscription = this.fireService.points$
       .subscribe((pointsArray: Point[]) => {
         this.points = pointsArray;
       });

@@ -16,26 +16,30 @@ export class AsideBarComponent implements OnInit, OnDestroy {
   public selectedPoint: Point;
   protected filteredPoints: Point[];
   protected allPoints: Point[];
-  private pointsSubscription: Subscription;
   protected searchControl = new FormControl();
+  private pointsSubscription: Subscription;
+  private searchSubscription: Subscription;
 
   constructor(private fireService: FirebaseService) {
   }
 
   public ngOnInit(): void {
-    this.pointsSubscription = this.fireService.points.subscribe((pointsArray: Point[]) => {
-      this.filteredPoints = pointsArray;
-      this.allPoints = pointsArray;
-    });
-    this.searchControl.valueChanges
-      .subscribe(x => {
-        this.filteredPoints = this.allPoints.filter((item, index) => item.address && item.address.includes(x));
+    this.pointsSubscription = this.fireService.points$
+      .subscribe((pointsArray: Point[]) => {
+        this.filteredPoints = pointsArray;
+        this.allPoints = pointsArray;
+      });
+    this.searchSubscription = this.searchControl.valueChanges
+      .subscribe((value: string) => {
+        this.filteredPoints = this.allPoints
+          .filter((point: Point, index: number) => point.address && point.address.includes(value));
         this.pointsFiltered.emit(this.filteredPoints);
       });
   }
 
   public ngOnDestroy(): void {
     this.pointsSubscription.unsubscribe();
+    this.searchSubscription.unsubscribe();
   }
 
   public onPointSelected(point: Point): void {
