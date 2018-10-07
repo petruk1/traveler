@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
-import {FirebaseService} from '../../../services/firebase.service';
+import {FirebaseService} from '../../services/firebase.service';
 
 const places = [
   'angers', 'atlanta', 'athens', 'arlington', 'alexandria'

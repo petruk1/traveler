@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FirebaseService} from '../../services/firebase.service';
+import {FirebaseService} from '../services/firebase.service';
 import {Subscription} from 'rxjs/index';
 import {MapComponent} from './map/map.component';
 
@@ -17,7 +17,7 @@ export class WorkingAreaComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.pointsSubscription = this.fireService.points
+    this.pointsSubscription = this.fireService.points$
       .subscribe((pointsArray: Point[]) => {
         this.points = pointsArray;
       });

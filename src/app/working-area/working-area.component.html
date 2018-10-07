@@ -1,8 +1,8 @@
 <app-aside-bar #aside
-               (pointSelected)="map.setCenter($event)"></app-aside-bar>
+               (pointSelected)="map.setCenter($event)"
+               (pointsFiltered)="map.setMarkersOnMap($event)"></app-aside-bar>
 
 <app-map #map
          [points]="points"
          (pointReady)="createPoint($event)">
 </app-map>
-

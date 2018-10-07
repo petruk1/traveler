@@ -1,0 +1,810 @@
+Index: src/app/app.module.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/app.module.ts	(date 1536492146000)
++++ src/app/app.module.ts	(revision )
+@@ -7,6 +7,10 @@
+ import {RouterModule, Routes} from '@angular/router';
+ import {ReactiveFormsModule} from '@angular/forms';
+ import {AuthModule} from './auth/auth.module';
++import { WorkingAreaComponent } from './working-area/working-area.component';
++import { AsideBarComponent } from './working-area/aside-bar/aside-bar.component';
++import {WorkingAreaModule} from './working-area/working-area.module';
++import {AngularFireDatabaseModule} from 'angularfire2/database';
+ 
+ const APP_ROUTES: Routes = [
+   {
+@@ -22,9 +26,12 @@
+     BrowserModule,
+     AngularFireModule.initializeApp(environment.firebase),
+     AngularFireAuthModule,
++    AngularFireDatabaseModule,
+     ReactiveFormsModule,
+     AuthModule,
+-    RouterModule.forRoot(APP_ROUTES)
++    WorkingAreaModule,
++
++   // RouterModule.forRoot(APP_ROUTES)
+ 
+   ],
+   bootstrap: [AppComponent]
+Index: src/app/working-area/search/search.component.scss
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/search/search.component.scss	(revision )
++++ src/app/working-area/search/search.component.scss	(revision )
+@@ -0,0 +1,20 @@
++:host{
++  width: 100%;
++  .search-box{
++    input {
++      width: 100%;
++      padding: 10px;
++      font-size: 1.1em;
++      outline: none;
++      border-radius: 3px;
++      border: none;
++    }
++  }
++  .result-container{
++    .item{
++      background-color: blanchedalmond;
++      padding: 5px 0 5px 10px;
++    }
++  }
++}
++
+Index: src/services/firebase.service.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/services/firebase.service.ts	(date 1536492146000)
++++ src/services/firebase.service.ts	(revision )
+@@ -1,14 +1,40 @@
+ import {Injectable} from '@angular/core';
+ import {AngularFireAuth} from 'angularfire2/auth';
+ import {LoginUserdata} from '../app/auth/interfaces';
++import {AngularFireDatabase} from 'angularfire2/database';
++import {Subject} from 'rxjs/index';
++
++export class Item {
++  body: string;
++  uid?: string;
++}
+ 
+ @Injectable({
+   providedIn: 'root'
+ })
+ export class FirebaseService {
+   private _authError: object;
++  private userId: string;
++  points: Subject<object[]> = new Subject();
+ 
+-  constructor(private af: AngularFireAuth) {
++  constructor(private fireAuth: AngularFireAuth,
++              private fireDatabase: AngularFireDatabase) {
++    this.fireAuth.authState.subscribe((user: any) => {
++      if (user) {
++        this.userId = user.uid;
++        this.loadPoints();
++      }
++    });
++  }
++
++  public createPoint(e: any): void {
++    e.name = 'mock';
++    this.fireDatabase.database.ref(`${this.userId}/points`).push(e);
++  }
++
++  private loadPoints(): void {
++    this.fireDatabase.database.ref(`${this.userId}/points`)
++      .on('value', x => this.points.next(Object.values(x.val())));
+   }
+ 
+   public get authError(): object {
+@@ -19,26 +45,26 @@
+     this._authError = error;
+   }
+ 
+-  login(data: LoginUserdata): void {
++  public login(data: LoginUserdata): void {
+     const {email, password} = data;
+-    this.af.auth.signInWithEmailAndPassword(email, password)
++    this.fireAuth.auth.signInWithEmailAndPassword(email, password)
+       .then(() => this._authError = null)
+       .catch((err: object) => this.authError = err);
+   }
+ 
+   public logout(): void {
+-    this.af.auth.signOut();
++    this.fireAuth.auth.signOut();
+   }
+ 
+   public isEmailAvailable(email: string): Promise<any> {
+-    return this.af.auth.fetchSignInMethodsForEmail(email);
++    return this.fireAuth.auth.fetchSignInMethodsForEmail(email);
+   }
+ 
+   public create(data: LoginUserdata): void {
+     const {email, password, name, surname} = data;
+-    this.af.auth.createUserWithEmailAndPassword(email, password)
++    this.fireAuth.auth.createUserWithEmailAndPassword(email, password)
+       .then(() => this.login(data))
+-      .then(() => this.af.auth.currentUser
++      .then(() => this.fireAuth.auth.currentUser
+         .updateProfile({displayName: `${name} ${surname}`, photoURL: null}));
+   }
+ 
+Index: package-lock.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- package-lock.json	(date 1536492146000)
++++ package-lock.json	(revision )
+@@ -754,6 +754,11 @@
+         "semver-intersect": "1.4.0"
+       }
+     },
++    "@types/bingmaps": {
++      "version": "0.0.1",
++      "resolved": "https://registry.npmjs.org/@types/bingmaps/-/bingmaps-0.0.1.tgz",
++      "integrity": "sha512-jNcii5qVe+CLqhj/IOOaZbjCpWUHUj6YbD9UHttgyQSiL4NbgQ5ERQWjIwuvhz73FCQdF/JuGVTnLswgEIdkow=="
++    },
+     "@types/jasmine": {
+       "version": "2.8.8",
+       "resolved": "https://registry.npmjs.org/@types/jasmine/-/jasmine-2.8.8.tgz",
+@@ -1082,6 +1087,14 @@
+       "integrity": "sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=",
+       "dev": true
+     },
++    "angular-maps": {
++      "version": "6.0.1",
++      "resolved": "https://registry.npmjs.org/angular-maps/-/angular-maps-6.0.1.tgz",
++      "integrity": "sha512-snqwNnWpRp7b+e1x/j3jpUMZHw1CCXFUr+afCegX10WoM2txjUJ2mooT9/7D/MFiUyoeI0UmQvk5D5d78T40lA==",
++      "requires": {
++        "tslib": "1.9.3"
++      }
++    },
+     "angularfire2": {
+       "version": "5.0.0-rc.12",
+       "resolved": "https://registry.npmjs.org/angularfire2/-/angularfire2-5.0.0-rc.12.tgz",
+@@ -1307,10 +1320,12 @@
+       "dev": true
+     },
+     "async": {
+-      "version": "1.5.2",
+-      "resolved": "https://registry.npmjs.org/async/-/async-1.5.2.tgz",
+-      "integrity": "sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=",
+-      "dev": true
++      "version": "2.6.1",
++      "resolved": "https://registry.npmjs.org/async/-/async-2.6.1.tgz",
++      "integrity": "sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==",
++      "requires": {
++        "lodash": "4.17.10"
++      }
+     },
+     "async-each": {
+       "version": "1.0.1",
+@@ -1605,6 +1620,11 @@
+       "integrity": "sha1-RqoXUftqL5PuXmibsQh9SxTGwgU=",
+       "dev": true
+     },
++    "bingmaps": {
++      "version": "2.0.3",
++      "resolved": "https://registry.npmjs.org/bingmaps/-/bingmaps-2.0.3.tgz",
++      "integrity": "sha1-WFB7PH1inzW1VtYFIrNuoyUPFQ4="
++    },
+     "blob": {
+       "version": "0.0.4",
+       "resolved": "https://registry.npmjs.org/blob/-/blob-0.0.4.tgz",
+@@ -5557,11 +5577,6 @@
+       "integrity": "sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==",
+       "dev": true
+     },
+-    "insert-css": {
+-      "version": "0.0.0",
+-      "resolved": "https://registry.npmjs.org/insert-css/-/insert-css-0.0.0.tgz",
+-      "integrity": "sha1-IwS/pviTq+y4/5yo2cdgXZTPKRE="
+-    },
+     "internal-ip": {
+       "version": "3.0.1",
+       "resolved": "https://registry.npmjs.org/internal-ip/-/internal-ip-3.0.1.tgz",
+@@ -5937,6 +5952,12 @@
+         "wordwrap": "1.0.0"
+       },
+       "dependencies": {
++        "async": {
++          "version": "1.5.2",
++          "resolved": "https://registry.npmjs.org/async/-/async-1.5.2.tgz",
++          "integrity": "sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=",
++          "dev": true
++        },
+         "glob": {
+           "version": "5.0.15",
+           "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz",
+@@ -6247,6 +6268,11 @@
+       "integrity": "sha1-RsP+yMGJKxKwgz25vHYiF226s0s=",
+       "dev": true
+     },
++    "json-loader": {
++      "version": "0.5.7",
++      "resolved": "https://registry.npmjs.org/json-loader/-/json-loader-0.5.7.tgz",
++      "integrity": "sha512-QLPs8Dj7lnf3e3QYS1zkCo+4ZwqOiF9d/nZnYozTISxXWCfNs9yuky5rJw4/W34s7POaNlbZmQGaB5NiXCbP4w=="
++    },
+     "json-parse-better-errors": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz",
+@@ -7430,14 +7456,6 @@
+         "abbrev": "1.0.9"
+       }
+     },
+-    "normalize-css": {
+-      "version": "2.3.1",
+-      "resolved": "https://registry.npmjs.org/normalize-css/-/normalize-css-2.3.1.tgz",
+-      "integrity": "sha1-/APjuR46Uap6GDa657K2rG1R4VY=",
+-      "requires": {
+-        "insert-css": "0.0.0"
+-      }
+-    },
+     "normalize-package-data": {
+       "version": "2.4.0",
+       "resolved": "https://registry.npmjs.org/normalize-package-data/-/normalize-package-data-2.4.0.tgz",
+@@ -8051,6 +8069,14 @@
+         "async": "1.5.2",
+         "debug": "2.6.9",
+         "mkdirp": "0.5.1"
++      },
++      "dependencies": {
++        "async": {
++          "version": "1.5.2",
++          "resolved": "https://registry.npmjs.org/async/-/async-1.5.2.tgz",
++          "integrity": "sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=",
++          "dev": true
++        }
+       }
+     },
+     "posix-character-classes": {
+Index: src/app/working-area/search/search.component.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/search/search.component.ts	(revision )
++++ src/app/working-area/search/search.component.ts	(revision )
+@@ -0,0 +1,37 @@
++import {Component, EventEmitter, OnInit} from '@angular/core';
++import {map} from 'rxjs/internal/operators';
++import {FirebaseService} from '../../../services/firebase.service';
++
++const places = [
++  'angers', 'atlanta', 'athens', 'arlington', 'alexandria'
++];
++
++
++@Component({
++  selector: 'app-search',
++  templateUrl: './search.component.html',
++  styleUrls: ['./search.component.scss']
++})
++export class SearchComponent implements OnInit {
++  protected result: any[];
++  protected search: EventEmitter<any> = new EventEmitter();
++
++  constructor(private fireService: FirebaseService) {
++
++  }
++
++  ngOnInit() {
++   // this.result = this.fireService.getPoints();
++    this.search
++      .pipe(
++        map(x => {
++          return places.filter(item => item.startsWith(x));
++        })
++      )
++      .subscribe(res => {
++       // this.result = Object.values(this.fireService.getPoints());
++       // console.log(this.result)
++      });
++  }
++
++}
+Index: src/app/working-area/aside-bar/aside-bar.component.scss
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/aside-bar/aside-bar.component.scss	(revision )
++++ src/app/working-area/aside-bar/aside-bar.component.scss	(revision )
+@@ -0,0 +1,21 @@
++$aside-border-radius: 10px;
++$host-background: rgba(192, 231, 234, .5);
++
++:host {
++  display: block;
++  background-color: $host-background;
++  width: 300px;
++  border-top-right-radius: $aside-border-radius;
++  border-bottom-right-radius: $aside-border-radius;
++  padding: 10px;
++
++  .point {
++    padding: 5px 0 5px 10px;
++    border-radius: 3px;
++    margin: 3px auto;
++    background-color: blanchedalmond;
++    cursor: pointer;
++  }
++
++}
++
+Index: src/app/working-area/working-area.component.scss
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/working-area.component.scss	(revision )
++++ src/app/working-area/working-area.component.scss	(revision )
+@@ -0,0 +1,19 @@
++:host {
++  display: flex;
++  height: 100%;
++  background-color: #4cda57;
++  div {
++    height: 100%;
++    flex: 1;
++  }
++}
++
++.map-container {
++  height: 100%;
++  width: 100%
++}
++
++.map-content {
++  display: block;
++}
++
+Index: src/app/working-area/working-area.component.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/working-area.component.ts	(revision )
++++ src/app/working-area/working-area.component.ts	(revision )
+@@ -0,0 +1,42 @@
++import {Component, OnInit, ViewChild} from '@angular/core';
++import {IBox, IMapOptions} from 'angular-maps';
++import {FirebaseService} from '../../services/firebase.service';
++
++@Component({
++  selector: 'app-working-area',
++  templateUrl: './working-area.component.html',
++  styleUrls: ['./working-area.component.scss']
++})
++export class WorkingAreaComponent implements OnInit {
++  protected points;
++  @ViewChild('map') map;
++  public options: IMapOptions = {
++    disableBirdseye: false,
++    disableStreetside: false,
++    navigationBarMode: 2,
++    center: {longitude: 40, latitude: 30},
++    centerOffset: {x: 60, y: 60},
++    zoom: 6
++  };
++  private _box: IBox = {
++    maxLatitude: 32,
++    maxLongitude: -92,
++    minLatitude: 29,
++    minLongitude: -98
++  };
++
++  constructor(private fireService: FirebaseService) {
++  }
++
++  ngOnInit() {
++    this.fireService.login({email: 'test@gmail.com', password: 'test@gmail.com'});
++    this.fireService.points.subscribe((pointsArray: object[]) => {
++      this.points = pointsArray;
++    });
++  }
++
++  public createPoint(e: any): void {
++    this.fireService.createPoint({lat: e.latLng.lat(), lng: e.latLng.lng()});
++  }
++
++}
+Index: package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- package.json	(date 1536492146000)
++++ package.json	(revision )
+@@ -20,7 +20,12 @@
+     "@angular/platform-browser": "^6.0.3",
+     "@angular/platform-browser-dynamic": "^6.0.3",
+     "@angular/router": "^6.0.3",
++    "@types/bingmaps": "0.0.1",
++    "angular-maps": "^6.0.1",
++    "async": "^2.5.0",
++    "json-loader": "^0.5.7",
+     "angularfire2": "^5.0.0-rc.12",
++    "bingmaps": "^2.0.3",
+     "core-js": "^2.5.4",
+     "firebase": "^5.4.2",
+     "font-awesome": "^4.7.0",
+Index: src/app/working-area/working-area.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/working-area.component.html	(revision )
++++ src/app/working-area/working-area.component.html	(revision )
+@@ -0,0 +1,10 @@
++<app-aside-bar #aside></app-aside-bar>
++<x-map [Options]="options"
++       (MapRightClick)="createPoint($event)">
++  <x-map-marker #map
++                *ngFor="let point of points"
++                [Latitude]="point.lat"
++                [Longitude]="point.lng"
++                [Label]="'M'">
++  </x-map-marker>
++</x-map>
+Index: src/app/working-area/aside-bar/aside-bar.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/aside-bar/aside-bar.component.html	(revision )
++++ src/app/working-area/aside-bar/aside-bar.component.html	(revision )
+@@ -0,0 +1,6 @@
++<div class="points-container">
++  <div class="point" *ngFor="let point of points">
++    {{point.name}}
++  </div>
++
++</div>
+Index: src/app/working-area/working-area.module.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/working-area.module.ts	(revision )
++++ src/app/working-area/working-area.module.ts	(revision )
+@@ -0,0 +1,41 @@
++import {NgModule} from '@angular/core';
++import {CommonModule} from '@angular/common';
++import {
++  DocumentRef,
++  GoogleMapAPILoader,
++  GoogleMapAPILoaderConfig,
++  MapAPILoader,
++  MapModule,
++  WindowRef
++} from 'angular-maps';
++import {SearchComponent} from './search/search.component';
++import {WorkingAreaComponent} from './working-area.component';
++import {AsideBarComponent} from './aside-bar/aside-bar.component';
++
++@NgModule({
++  imports: [
++    CommonModule,
++    MapModule.forRootGoogle()
++  ],
++  providers: [{
++    provide: MapAPILoader, deps: [], useFactory: GoogleMapServiceProviderFactory
++  }],
++  declarations: [
++    WorkingAreaComponent,
++    AsideBarComponent,
++    SearchComponent
++  ],
++  exports: [MapModule,
++    WorkingAreaComponent,
++    AsideBarComponent,
++    SearchComponent]
++})
++export class WorkingAreaModule {
++}
++
++function GoogleMapServiceProviderFactory() {
++  const gc: GoogleMapAPILoaderConfig = new GoogleMapAPILoaderConfig();
++  gc.apiKey = 'AIzaSyDe2QqXrbtaORvL-I0WHpiI72HxtfTz5Zo';
++  gc.enableClustering = true;
++  return new GoogleMapAPILoader(gc, new WindowRef(), new DocumentRef());
++}
+Index: src/app/working-area/aside-bar/aside-bar.component.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/aside-bar/aside-bar.component.ts	(revision )
++++ src/app/working-area/aside-bar/aside-bar.component.ts	(revision )
+@@ -0,0 +1,22 @@
++import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
++import {FirebaseService} from '../../../services/firebase.service';
++
++@Component({
++  selector: 'app-aside-bar',
++  templateUrl: './aside-bar.component.html',
++  styleUrls: ['./aside-bar.component.scss']
++})
++export class AsideBarComponent implements OnInit {
++  protected points;
++
++  constructor(private fireService: FirebaseService,
++              private cd: ChangeDetectorRef) {
++  }
++
++  ngOnInit() {
++    this.fireService.points.subscribe((pointsArray: object[]) => {
++      this.points = pointsArray;
++      this.cd.detectChanges();
++    });
++  }
++}
+Index: src/app/app.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/app.component.html	(date 1536492146000)
++++ src/app/app.component.html	(revision )
+@@ -1,1 +1,1 @@
+-<router-outlet></router-outlet>
++<app-working-area></app-working-area>
+Index: src/app/working-area/search/search.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/app/working-area/search/search.component.html	(revision )
++++ src/app/working-area/search/search.component.html	(revision )
+@@ -0,0 +1,11 @@
++<div class="search-box">
++  <input type="text"
++        #inputField
++         (input)="search.emit($event.target.value)"
++         placeholder="Search a Point!">
++</div>
++<div class="result-container">
++  <div class="item" *ngFor="let item of result">
++    {{item.name}}
++  </div>
++</div>
+diff --git src/assets/images/Angers_Pont_sur_Maine.JPG src/assets/images/Angers_Pont_sur_Maine.JPG
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bda75adf089c04f513055fd102524b9fb73d7ad
+GIT binary patch
+literal 11517
+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
+E0MqThp8x;=
+

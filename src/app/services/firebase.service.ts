@@ -1,19 +1,20 @@
 import {Injectable, NgZone} from '@angular/core';
 import {AngularFireAuth} from 'angularfire2/auth';
-import {LoginUserdata} from '../app/auth/interfaces';
+import {LoginUserdata} from '../auth/interfaces';
 import {AngularFireDatabase} from 'angularfire2/database';
 import {Subject} from 'rxjs/index';
 import {User} from 'firebase';
 import {Router} from '@angular/router';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  private pointsSubject: Subject<Point[]> = new Subject();
   private _authError: object;
-  public userId: string;
-  public points: Subject<object[]> = new Subject();
+  private userId: string;
+  public points$ = this.pointsSubject.asObservable();
+
   constructor(private fireAuth: AngularFireAuth,
               private fireDatabase: AngularFireDatabase,
               private zone: NgZone,
@@ -25,6 +26,7 @@ export class FirebaseService {
       }
     });
   }
+
   public createPoint(point: Point): void {
     this.fireDatabase.database.ref(`${this.userId}/points`).push(point);
   }
@@ -32,7 +34,7 @@ export class FirebaseService {
   private loadPoints(): void {
     this.fireDatabase.database.ref(`${this.userId}/points`)
       .on('value', x => {
-        this.zone.run(() => this.points.next(Object.values(x.val())));
+        this.zone.run(() => this.pointsSubject.next(Object.values(x.val())));
       });
   }
 
@@ -48,8 +50,8 @@ export class FirebaseService {
     const {email, password} = data;
     this.fireAuth.auth.signInWithEmailAndPassword(email, password)
       .then(() => {
-      this.router.navigate(['/map']);
-      this._authError = null;
+        this.router.navigate(['/map']);
+        this._authError = null;
       })
       .catch((err: object) => this.authError = err);
   }
