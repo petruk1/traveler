@@ -4,6 +4,7 @@ import {LoginUserdata} from '../app/auth/interfaces';
 import {AngularFireDatabase} from 'angularfire2/database';
 import {Subject} from 'rxjs/index';
 import {User} from 'firebase';
+import {Router} from '@angular/router';
 
 
 @Injectable({
@@ -11,12 +12,12 @@ import {User} from 'firebase';
 })
 export class FirebaseService {
   private _authError: object;
-  private userId: string;
+  public userId: string;
   public points: Subject<object[]> = new Subject();
-
   constructor(private fireAuth: AngularFireAuth,
               private fireDatabase: AngularFireDatabase,
-              private zone: NgZone) {
+              private zone: NgZone,
+              private router: Router) {
     this.fireAuth.authState.subscribe((user: User) => {
       if (user) {
         this.userId = user.uid;
@@ -46,7 +47,10 @@ export class FirebaseService {
   public login(data: LoginUserdata): void {
     const {email, password} = data;
     this.fireAuth.auth.signInWithEmailAndPassword(email, password)
-      .then(() => this._authError = null)
+      .then(() => {
+      this.router.navigate(['/map']);
+      this._authError = null;
+      })
       .catch((err: object) => this.authError = err);
   }
 
