@@ -34,6 +34,7 @@ export class MapComponent implements AfterViewInit {
   private markers: google.maps.Marker[] = [];
   private newPoint: Point;
   private geocoder = new google.maps.Geocoder();
+  public nativeRightClickEvent: MouseEvent;
   private configs: google.maps.MapOptions = {
     zoom: 8,
     center: {lat: 52, lng: 30}
@@ -45,14 +46,19 @@ export class MapComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.map = new google.maps.Map(this.container.nativeElement, this.configs);
+    this.map.addListener('dragstart', () => {
+      this.isPointFormVisible = false;
+      this.zone.run(() => this.cd.detectChanges());
+    });
     this.map.addListener('rightclick', (event: any) => {
+      const NativeEvent = Object.values(event).find((elem: any) => elem instanceof MouseEvent) as MouseEvent;
       this.isPointFormVisible = true;
-      this.pointFormPositionTop = event.wa.offsetY;
-      this.pointFormPositionLeft = event.wa.offsetX;
+      this.pointFormPositionTop = NativeEvent.offsetY;
+      this.pointFormPositionLeft = NativeEvent.offsetX;
       this.newPoint = {lng: event.latLng.lng(), lat: event.latLng.lat()};
       this.geocoder.geocode({location: new google.maps.LatLng(event.latLng.lat(), event.latLng.lng())},
         (results, status) => {
-          if (status) {
+          if (status && results) {
             this.newPoint.address = results[0].formatted_address;
           }
         });
