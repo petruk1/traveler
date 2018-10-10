@@ -11,8 +11,8 @@ const places = [
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit {
-  protected result: any[];
-  protected search: EventEmitter<any> = new EventEmitter();
+  public result: any[];
+  public search: EventEmitter<any> = new EventEmitter();
 
   constructor(private fireService: FirebaseService) {
 

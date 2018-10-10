@@ -10,7 +10,7 @@ import {MapComponent} from './map/map.component';
 })
 export class WorkingAreaComponent implements OnInit, OnDestroy {
   @ViewChild('map') map: MapComponent;
-  protected points: Point[];
+  public points: Point[];
   private pointsSubscription: Subscription;
 
   constructor(private fireService: FirebaseService) {

@@ -8,7 +8,7 @@ import {take} from 'rxjs/internal/operators';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  protected isCheckingUserAuth = true;
+  public isCheckingUserAuth = true;
 
   constructor(private auth: AngularFireAuth) {
     this.auth.user.pipe(

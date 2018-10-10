@@ -8,10 +8,10 @@ import {FormControl} from '@angular/forms';
 })
 export class PointCreationComponent {
   @Output()
-  protected captionReady: EventEmitter<string> = new EventEmitter();
+  public captionReady: EventEmitter<string> = new EventEmitter();
   @Output()
-  protected cancel: EventEmitter<boolean> = new EventEmitter();
-  protected captionControl = new FormControl();
+  public cancel: EventEmitter<boolean> = new EventEmitter();
+  public captionControl = new FormControl();
 
   public emitCaption(): void {
     this.captionReady.emit(this.captionControl.value);

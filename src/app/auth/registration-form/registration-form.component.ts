@@ -9,7 +9,7 @@ import {FirebaseService} from '../../services/firebase.service';
   styleUrls: ['./registration-form.component.scss'],
 })
 export class RegistrationFormComponent implements OnInit {
-  protected registrationForm: FormGroup;
+  public registrationForm: FormGroup;
 
   constructor(private fb: FormBuilder,
               private firebaseService: FirebaseService) {
