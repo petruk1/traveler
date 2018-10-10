@@ -5,6 +5,7 @@ import {AngularFireDatabase} from 'angularfire2/database';
 import {Subject} from 'rxjs/index';
 import {User} from 'firebase';
 import {Router} from '@angular/router';
+import {DataSnapshot} from 'angularfire2/database-deprecated/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +34,8 @@ export class FirebaseService {
 
   private loadPoints(): void {
     this.fireDatabase.database.ref(`${this.userId}/points`)
-      .on('value', x => {
-        this.zone.run(() => this.pointsSubject.next(Object.values(x.val())));
+      .on('value', (data: DataSnapshot) => {
+        this.zone.run(() => this.pointsSubject.next(Object.values(data.val())));
       });
   }
 
