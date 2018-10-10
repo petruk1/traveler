@@ -9,7 +9,7 @@ import {LoginUserdata} from '../interfaces';
   styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent implements OnInit {
-  protected signInForm: FormGroup;
+  public signInForm: FormGroup;
 
   constructor(private fbService: FirebaseService,
               private formBuilder: FormBuilder) {

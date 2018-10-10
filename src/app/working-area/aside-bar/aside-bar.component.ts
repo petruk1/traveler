@@ -14,9 +14,9 @@ export class AsideBarComponent implements OnInit, OnDestroy {
   @Output()
   public pointsFiltered: EventEmitter<Point[]> = new EventEmitter();
   public selectedPoint: Point;
-  protected filteredPoints: Point[];
-  protected allPoints: Point[];
-  protected searchControl = new FormControl();
+  public filteredPoints: Point[];
+  public allPoints: Point[];
+  public searchControl = new FormControl();
   private pointsSubscription: Subscription;
   private searchSubscription: Subscription;
 
