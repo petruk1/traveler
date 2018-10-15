@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FirebaseService} from '../services/firebase.service';
 import {Subscription} from 'rxjs/index';
 import {MapComponent} from './map/map.component';
+import {Point} from './classes';
 
 @Component({
   selector: 'app-working-area',
