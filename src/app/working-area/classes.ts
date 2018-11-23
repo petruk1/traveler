@@ -1,3 +1,5 @@
+import {Country} from './interfaces';
+
 export class Point {
   public lat: number;
   public lng: number;
