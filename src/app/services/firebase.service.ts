@@ -6,6 +6,7 @@ import {Subject} from 'rxjs/index';
 import {User} from 'firebase';
 import {Router} from '@angular/router';
 import {DataSnapshot} from 'angularfire2/database-deprecated/interfaces';
+import {Point} from '../working-area/classes';
 
 @Injectable({
   providedIn: 'root'

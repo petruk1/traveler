@@ -10,7 +10,7 @@ import {AuthModule} from './auth/auth.module';
 import {WorkingAreaComponent} from './working-area/working-area.component';
 import {WorkingAreaModule} from './working-area/working-area.module';
 import {AngularFireDatabaseModule} from 'angularfire2/database';
-import {AuthGuard} from '../guards/auth.guard';
+import {AuthGuard} from './guards/auth.guard';
 
 const APP_ROUTES: Routes = [
   {

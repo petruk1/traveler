@@ -2,6 +2,7 @@ import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core'
 import {FirebaseService} from '../../services/firebase.service';
 import {Subscription} from 'rxjs/index';
 import {FormControl} from '@angular/forms';
+import {Point} from '../classes';
 
 @Component({
   selector: 'app-aside-bar',
@@ -32,7 +33,12 @@ export class AsideBarComponent implements OnInit, OnDestroy {
     this.searchSubscription = this.searchControl.valueChanges
       .subscribe((value: string) => {
         this.filteredPoints = this.allPoints
-          .filter((point: Point, index: number) => point.address && point.address.includes(value));
+          .filter((point: Point) => {
+            const lowercaseValue = value.toLowerCase();
+            return point.address
+              && point.address.toLowerCase().includes(lowercaseValue)
+              || point.name.toLowerCase().includes(lowercaseValue);
+          });
         this.pointsFiltered.emit(this.filteredPoints);
       });
   }

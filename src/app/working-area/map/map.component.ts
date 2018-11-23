@@ -9,6 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
+import {Point} from '../classes';
 
 @Component({
   selector: 'app-map',
@@ -32,9 +33,8 @@ export class MapComponent implements AfterViewInit {
   public pointFormPositionLeft = 0;
   private map: google.maps.Map;
   private markers: google.maps.Marker[] = [];
-  private newPoint: Point;
+  private newPoint: Point = new Point();
   private geocoder = new google.maps.Geocoder();
-  public nativeRightClickEvent: MouseEvent;
   private configs: google.maps.MapOptions = {
     zoom: 8,
     center: {lat: 52, lng: 30}
@@ -51,18 +51,22 @@ export class MapComponent implements AfterViewInit {
       this.zone.run(() => this.cd.detectChanges());
     });
     this.map.addListener('rightclick', (event: any) => {
+      this.newPoint = new Point();
       const NativeEvent = Object.values(event).find((elem: any) => elem instanceof MouseEvent) as MouseEvent;
-      this.isPointFormVisible = true;
       this.pointFormPositionTop = NativeEvent.offsetY;
       this.pointFormPositionLeft = NativeEvent.offsetX;
-      this.newPoint = {lng: event.latLng.lng(), lat: event.latLng.lat()};
+      this.newPoint.lat = event.latLng.lat();
+      this.newPoint.lng = event.latLng.lng();
       this.geocoder.geocode({location: new google.maps.LatLng(event.latLng.lat(), event.latLng.lng())},
-        (results, status) => {
-          if (status && results) {
+        (results: any[], status) => {
+          console.log(results);
+          if (status && results.length) {
+            this.isPointFormVisible = true;
+            this.zone.run(() => this.cd.detectChanges());
             this.newPoint.address = results[0].formatted_address;
+            this.newPoint.keywords = results[0].formatted_address.split(', ');
           }
         });
-      this.zone.run(() => this.cd.detectChanges());
     });
   }
 
