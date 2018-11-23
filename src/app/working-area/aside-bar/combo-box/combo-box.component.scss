@@ -1,0 +1,65 @@
+$title-left-padding: 10px;
+$title-top-padding: 10px;
+$combobox-border-radius: 5px;
+
+:host {
+  display: flex;
+  background-color: #979797;
+  flex-direction: column;
+  margin: 5px 0;
+  border-radius: $combobox-border-radius;
+
+  .title {
+    padding: $title-top-padding $title-left-padding;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .title-block {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #fafffa;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    .count {
+      border-radius: 10px;
+      font-size: 12px;
+      min-width: 10px;
+      padding: 2px;
+      text-align: center;
+      background-color: #4cda57;
+    }
+
+    .icon {
+      padding: 0 5px;
+      margin-left: auto;
+    }
+  }
+
+  .points-container {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    background-color: darkgrey;
+    border-bottom-right-radius: $combobox-border-radius;
+    border-bottom-left-radius: $combobox-border-radius;
+
+    .point {
+      padding: 3px $title-left-padding*2;
+      background-color: #9f9d9d;
+      color: white;
+      margin: 3px 0;
+      cursor: pointer;
+
+    }
+
+    .selected {
+      background-color: #c9c9c9;
+    }
+  }
+
+}

@@ -1,11 +1,8 @@
 <input class="search"
-[formControl]="searchControl">
-<div class="points-container">
-  <div class="point"
-       *ngFor="let point of filteredPoints"
-       (click)="onPointSelected(point)"
-       [class.selected]="point===selectedPoint">
-    {{point.name}}
-  </div>
-
-</div>
+       [formControl]="searchControl"
+       placeholder="write smth to search">
+<app-combo-box *ngFor="let key of pointsMapKeys"
+               [title]="key"
+               [items]="pointsMappedByCountry.get(key)"
+               (itemClick)="onPointSelected($event)">
+</app-combo-box>

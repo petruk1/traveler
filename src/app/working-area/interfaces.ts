@@ -1,6 +1,4 @@
-interface Point {
-  lat: number;
-  lng: number;
-  name?: string;
-  address?: string;
+interface Country {
+  long_name: string;
+  short_name: string;
 }

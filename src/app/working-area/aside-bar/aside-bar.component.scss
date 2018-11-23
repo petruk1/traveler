@@ -1,20 +1,23 @@
 $aside-border-radius: 10px;
-$host-background: rgba(192, 231, 234, .5);
+$host-background: #5b5c5a;
 $search-left-padding: 10px;
 :host {
   display: block;
   background-color: $host-background;
   width: 300px;
-  border-top-right-radius: $aside-border-radius;
-  border-bottom-right-radius: $aside-border-radius;
   padding: 10px;
   overflow-y: auto;
 
-  .search{
-   border: none;
+  .search {
+    border: none;
     padding: 5px 0 5px 10px;
     width: calc(100% - 10px);
     margin: 3px auto;
+    background-color: #707070;
+    color: white;
+    &::placeholder {
+      color: #9f9d9d;
+    }
   }
 
   .point {
@@ -23,9 +26,6 @@ $search-left-padding: 10px;
     margin: 3px auto;
     background-color: blanchedalmond;
     cursor: pointer;
-  }
-  .selected{
-    background-color: #eaeaea;
   }
 
 }

@@ -6,19 +6,22 @@ import {AsideBarComponent} from './aside-bar/aside-bar.component';
 import {MapComponent} from './map/map.component';
 import {PointCreationComponent} from './point-creation/point-creation.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-
+import { ComboBoxComponent } from './aside-bar/combo-box/combo-box.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FontAwesomeModule
   ],
   declarations: [
     WorkingAreaComponent,
     AsideBarComponent,
     SearchComponent,
     MapComponent,
-    PointCreationComponent
+    PointCreationComponent,
+    ComboBoxComponent
   ],
   exports: [
     MapComponent,

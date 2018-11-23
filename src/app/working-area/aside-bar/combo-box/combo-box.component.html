@@ -1,0 +1,16 @@
+<div class="title-block"
+     (click)="toggleListOpenness()">
+  <div class="title">{{title}}</div>
+  <span class="count">{{items.length}}</span>
+  <fa-icon class="icon"
+           [icon]="angleIcon"></fa-icon>
+</div>
+<ul class="points-container"
+    *ngIf="isListOpen">
+  <li class="point"
+      *ngFor="let item of items"
+      [class.selected]="item===selectedItem"
+      (click)="onItemClick(item)">
+    {{item.name}}
+  </li>
+</ul>
