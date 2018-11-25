@@ -10,7 +10,6 @@ import {
   ViewChild
 } from '@angular/core';
 import {Point} from '../classes';
-import LatLngLiteral = google.maps.LatLngLiteral;
 
 @Component({
   selector: 'app-map',
@@ -20,6 +19,8 @@ import LatLngLiteral = google.maps.LatLngLiteral;
 export class MapComponent implements AfterViewInit {
   @ViewChild('mapContainer')
   private container: ElementRef;
+  @ViewChild('searchBox')
+  private searchBoxInputElement: ElementRef;
 
   @Input()
   public set points(pointsArray: Point[]) {
@@ -32,14 +33,17 @@ export class MapComponent implements AfterViewInit {
   public isPointFormVisible = false;
   public pointFormPositionTop = 0;
   public pointFormPositionLeft = 0;
+  public isSearchBoxVisible = false;
   private map: google.maps.Map;
   private markers: google.maps.Marker[] = [];
+  private searchedPlaceMarkers: google.maps.Marker[] = [];
   private newPoint: Point;
   private geocoder = new google.maps.Geocoder();
   private configs: google.maps.MapOptions = {
     zoom: 8,
     center: {lat: 52, lng: 30}
   };
+  private searchBox: google.maps.places.SearchBox;
 
   constructor(private cd: ChangeDetectorRef,
               private zone: NgZone) {
@@ -53,31 +57,71 @@ export class MapComponent implements AfterViewInit {
     });
     this.map.addListener('rightclick', (event: any) => {
       const nativeJSEvent = Object.values(event).find((elem: any) => elem instanceof MouseEvent) as MouseEvent;
-      this.isPointFormVisible = true;
-      this.pointFormPositionTop = nativeJSEvent.offsetY;
-      this.pointFormPositionTop = nativeJSEvent.offsetY;
-      this.pointFormPositionLeft = nativeJSEvent.offsetX;
-      this.newPoint = new Point( event.latLng.lat(), event.latLng.lng());
+      this.pointFormPositionTop = nativeJSEvent.pageY;
+      this.pointFormPositionLeft = nativeJSEvent.pageX;
+      this.newPoint = new Point(event.latLng.lat(), event.latLng.lng());
 
       this.geocoder.geocode({location: new google.maps.LatLng(event.latLng.lat(), event.latLng.lng())},
         (results, status) => {
-          if (status && results) {
-            this.newPoint.setAddress(results[0].formatted_address);
-            for (let i = 0; i < results[0].address_components.length; i++) {
-              if (results[0].address_components[i].types.indexOf('country') !== -1) {
-                this.newPoint.setCountry(results[0].address_components[i]);
+          if (status && results.length) {
+            const address = results[0];
+            this.isPointFormVisible = true;
+            this.newPoint.setAddress(address.formatted_address);
+            for (let i = 0; i < address.address_components.length; i++) {
+              if (address.address_components[i].types.indexOf('country') !== -1) {
+                this.newPoint.setCountry(address.address_components[i]);
               }
             }
           }
         });
       this.zone.run(() => this.cd.detectChanges());
     });
+
+    const htmlInput = this.searchBoxInputElement.nativeElement;
+    this.searchBox = new google.maps.places.SearchBox(htmlInput);
+    this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(htmlInput);
+    this.searchBox.addListener('places_changed', () => {
+      this.searchedPlaceMarkers.forEach((marker: google.maps.Marker) => marker.setMap(null));
+      const place = this.searchBox.getPlaces()[0];
+      this.map.setCenter(place.geometry.location);
+      const icon = {
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25)
+      };
+      const newMarker = new google.maps.Marker({
+        map: this.map,
+        icon: icon,
+        title: place.name,
+        position: place.geometry.location
+      });
+      newMarker.addListener('rightclick', (event: any) => {
+        const nativeJSEvent = Object.values(event).find((elem: any) => elem instanceof MouseEvent) as MouseEvent;
+        this.isPointFormVisible = true;
+        this.pointFormPositionTop = nativeJSEvent.pageY;
+        this.pointFormPositionLeft = nativeJSEvent.pageX;
+        this.newPoint = new Point(event.latLng.lat(), event.latLng.lng());
+        for (let i = 0; i < place.address_components.length; i++) {
+          if (place.address_components[i].types.indexOf('country') !== -1) {
+            this.newPoint.setCountry(place.address_components[i]);
+          }
+        }
+      });
+      this.searchedPlaceMarkers.push(newMarker);
+    });
+    this.map.addListener('tilesloaded', () => this.isSearchBoxVisible = true);
   }
 
   public createPoint(caption: string): void {
     this.newPoint.setName(caption);
     this.pointReady.emit(this.newPoint);
     this.isPointFormVisible = false;
+    if (this.searchedPlaceMarkers.length) {
+      this.searchedPlaceMarkers.pop();
+      this.searchBoxInputElement.nativeElement.value = '';
+    }
   }
 
   public setCenter(centerLocation: Point): void {
@@ -86,6 +130,11 @@ export class MapComponent implements AfterViewInit {
 
   public setMarkersOnMap(points: Point[] = []): void {
     this.markers.forEach((marker: google.maps.Marker) => marker.setMap(null));
-    points.forEach((point: Point) => this.markers.push(new google.maps.Marker({position: point, map: this.map})));
+    points.forEach((point: Point) =>
+      this.markers.push(new google.maps.Marker({
+        map: this.map,
+        title: point.name,
+        position: point,
+      })));
   }
 }
