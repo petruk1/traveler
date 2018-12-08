@@ -54,7 +54,9 @@ $combobox-border-radius: 5px;
       color: white;
       margin: 3px 0;
       cursor: pointer;
-
+      &:hover {
+        background-color: #8d8d8d;
+      }
     }
 
     .selected {

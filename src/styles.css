@@ -33,3 +33,7 @@ html, body {
 .invalid {
   border-bottom: 1px solid red !important;
 }
+
+.display-none {
+  display: none;
+}
