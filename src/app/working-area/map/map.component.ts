@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {Point} from '../classes';
 import {getPageHeight, getPageWidth} from '../../utils';
+import {LatLng, MapIconSize} from '../google-types';
 
 @Component({
   selector: 'app-map',
@@ -79,7 +80,7 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  public setCenter(centerLocation: Point): void {
+  public setCenter(centerLocation: LatLng): void {
     this.map.setCenter(centerLocation);
   }
 
@@ -104,7 +105,7 @@ export class MapComponent implements AfterViewInit {
 
   private onRightClickByMap(event: any) {
     this.setupPointCreationFormCoordinates(event);
-    this.setMarkerOnMap({lat: event.latLng.lat(), lng: event.latLng.lng()});
+    this.setMarkerOnMap(new LatLng(event.latLng.lat(),  event.latLng.lng()));
     this.newPoint = new Point(event.latLng.lat(), event.latLng.lng());
     this.geocoder.geocode({location: new google.maps.LatLng(event.latLng.lat(), event.latLng.lng())},
       (results, status) => {
@@ -124,10 +125,10 @@ export class MapComponent implements AfterViewInit {
     this.map.setCenter(place.geometry.location);
     const icon = {
       url: place.icon,
-      size: new google.maps.Size(71, 71),
+      size: new MapIconSize(71, 71),
       origin: new google.maps.Point(0, 0),
       anchor: new google.maps.Point(17, 34),
-      scaledSize: new google.maps.Size(25, 25)
+      scaledSize: new MapIconSize(25, 25)
     };
     const newMarker = new google.maps.Marker({
       map: this.map,
@@ -146,14 +147,14 @@ export class MapComponent implements AfterViewInit {
     this.setupCountry(place);
   }
 
-  private setMarkerOnMap(point: Point): void {
+  private setMarkerOnMap(coordinates: LatLng): void {
     if (this.newPointMarker) {
       this.newPointMarker.setMap(null);
     }
     this.newPointMarker = new google.maps.Marker({
       map: this.map,
       title: 'New Point',
-      position: point,
+      position: coordinates,
       icon: {
         url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
       }
@@ -164,13 +165,13 @@ export class MapComponent implements AfterViewInit {
     const nativeJSEvent = Object.values(event).find((elem: any) => elem instanceof MouseEvent) as MouseEvent;
     if (nativeJSEvent.pageY + this.pointFormHeight >= getPageHeight()) {
       this.pointFormPositionTop = getPageHeight() - this.pointFormHeight - this.pointFormPaddingTopBottom * 2;
-      this.setCenter({lat: event.latLng.lat(), lng: event.latLng.lng()});
+      this.setCenter(new LatLng( event.latLng.lat(), event.latLng.lng()));
     } else {
       this.pointFormPositionTop = nativeJSEvent.pageY;
     }
     if (nativeJSEvent.pageX + this.pointFormWidth >= getPageWidth()) {
       this.pointFormPositionLeft = getPageWidth() - this.pointFormWidth - this.pointFormPaddingLeftRight * 2;
-      this.setCenter({lat: event.latLng.lat(), lng: event.latLng.lng()});
+      this.setCenter(new LatLng( event.latLng.lat(),  event.latLng.lng()));
     } else {
       this.pointFormPositionLeft = nativeJSEvent.pageX;
     }
