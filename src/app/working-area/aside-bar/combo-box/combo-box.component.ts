@@ -16,6 +16,7 @@ export class ComboBoxComponent {
   public itemClick: EventEmitter<Point> = new EventEmitter();
   public angleIcon = faAngleDown;
   public isListOpen = false;
+  @Input()
   public selectedItem: Point;
 
   public onItemClick(point: Point): void {

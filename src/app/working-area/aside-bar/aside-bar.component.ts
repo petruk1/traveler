@@ -20,6 +20,7 @@ export class AsideBarComponent implements OnInit, OnDestroy {
   public searchControl = new FormControl();
   public pointsMappedByCountry: Map<string, Point[]> = new Map();
   public pointsMapKeys = null;
+  public activePoint: Point;
   private pointsSubscription: Subscription;
   private searchSubscription: Subscription;
 
@@ -27,6 +28,7 @@ export class AsideBarComponent implements OnInit, OnDestroy {
   }
 
   public onPointSelected(point: Point): void {
+    this.activePoint = point;
     this.pointSelected.emit(point);
   }
 
@@ -50,14 +52,15 @@ export class AsideBarComponent implements OnInit, OnDestroy {
 
   private sortPointsByCountries(points: Point[]): void {
     this.pointsMappedByCountry.clear();
-    for (let i = 0; i < points.length; i++) {
-      const keyword = points[i].country && points[i].country.long_name || 'others';
+    points.forEach((point: Point) => {
+      const keyword = point.country && point.country.long_name || 'others';
       if (this.pointsMappedByCountry.has(keyword)) {
-        this.pointsMappedByCountry.set(keyword, [...this.pointsMappedByCountry.get(keyword), points[i]]);
+        this.pointsMappedByCountry.set(keyword, [...this.pointsMappedByCountry.get(keyword), point]);
       } else {
-        this.pointsMappedByCountry.set(keyword, [points[i]]);
+        this.pointsMappedByCountry.set(keyword, [point]);
       }
-    }
+    });
+    this.activePoint = points[points.length - 1];
     this.pointsMapKeys = Array.from(this.pointsMappedByCountry.keys());
   }
 

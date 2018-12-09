@@ -49,7 +49,7 @@ export class MapComponent implements AfterViewInit {
     center: {lat: 52, lng: 30}
   };
   private searchBox: google.maps.places.SearchBox;
-  private newPointMarker: google.map.Marker;
+  private newPointMarker: google.maps.Marker;
 
   constructor(private cd: ChangeDetectorRef,
               private zone: NgZone) {

@@ -3,6 +3,7 @@
        placeholder="write smth to search">
 <app-combo-box *ngFor="let key of pointsMapKeys"
                [title]="key"
+               [selectedItem]="activePoint"
                [items]="pointsMappedByCountry.get(key)"
                (itemClick)="onPointSelected($event)">
 </app-combo-box>
