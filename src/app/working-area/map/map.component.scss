@@ -18,11 +18,8 @@ div {
   font-family: proxima-semibold, serif;
   z-index: 2;
   transition: box-shadow .5s ease;
-  &:focus {
-    box-shadow: 0 0 4px 0;
-  }
 
-  &:hover {
+  &:hover,&:focus {
     box-shadow: 0 0 4px 0;
   }
   &::placeholder {

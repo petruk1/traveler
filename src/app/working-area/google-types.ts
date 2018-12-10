@@ -26,6 +26,8 @@ export class MapIconSize extends google.maps.Size {
 
 }
 
+export const MapControlPosition = google.maps.ControlPosition;
+
 export class MapPoint extends google.maps.Point {
 
 }
