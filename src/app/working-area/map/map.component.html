@@ -2,7 +2,7 @@
        class="search"
        placeholder="type anything ..."
        #searchBox
-       [ngStyle]="{'display': isSearchBoxVisible?'inline-block':'none'}">
+       [class.display-none]="!isSearchBoxVisible">
 <div #mapContainer></div>
 <app-point-creation *ngIf="isPointFormVisible"
                     [style.top.px]="pointFormPositionTop"
