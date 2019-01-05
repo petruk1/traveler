@@ -28,7 +28,7 @@ import {DOCUMENT} from '@angular/common';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements AfterViewInit {
   @ViewChild('mapContainer')
@@ -58,11 +58,12 @@ export class MapComponent implements AfterViewInit {
   private newPoint: Point;
   private geocoder = new Geocoder();
   private configs: MapOptions = {
-    zoom: 8,
-    center: {lat: 52, lng: 30}
+    zoom: 2,
+    center: {lat: 20, lng: 0}
   };
   private searchBox: MapSearchBox;
   private newPointMarker: MapMarker;
+  private zoom = 12;
 
   constructor(private cd: ChangeDetectorRef,
               private zone: NgZone,
@@ -93,8 +94,14 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
+  public cancelPointCreation(event: any): void{
+    this.isPointFormVisible = event;
+    this.newPointMarker.setMap(null);
+  }
+
   public setCenter(centerLocation: LatLng): void {
     this.map.setCenter(centerLocation);
+    this.map.setZoom(this.zoom);
   }
 
   public setMarkersOnMap(points: Point[] = []): void {
