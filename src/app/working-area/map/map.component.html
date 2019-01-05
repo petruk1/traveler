@@ -3,9 +3,10 @@
        placeholder="type anything ..."
        #searchBox
        [class.display-none]="!isSearchBoxVisible">
-<div #mapContainer></div>
-<app-point-creation *ngIf="isPointFormVisible"
-                    [style.top.px]="pointFormPositionTop"
-                    [style.left.px]="pointFormPositionLeft"
-                    (captionReady)="createPoint($event)"
-                    (cancel)="cancelPointCreation($event)"></app-point-creation>
+<div class="map-container">
+  <div #mapContainer></div>
+  <app-point-creation class="new-point-form"
+                      *ngIf="isPointFormVisible"
+                      (captionReady)="createPoint($event)"
+                      (cancel)="cancelPointCreation($event)"></app-point-creation>
+</div>

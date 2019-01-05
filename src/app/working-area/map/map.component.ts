@@ -45,12 +45,6 @@ export class MapComponent implements AfterViewInit {
   private pointReady: EventEmitter<Point> = new EventEmitter();
 
   public isPointFormVisible = false;
-  public pointFormPositionTop = 0;
-  public pointFormPositionLeft = 0;
-  public pointFormWidth = 300;
-  public pointFormHeight = 60;
-  public pointFormPaddingTopBottom = 20;
-  public pointFormPaddingLeftRight = 20;
   public isSearchBoxVisible = false;
   private map: Map;
   private markers: MapMarker[] = [];
@@ -79,7 +73,6 @@ export class MapComponent implements AfterViewInit {
     this.map.addListener('rightclick', this.onRightClickByMap.bind(this));
     this.map.addListener('tilesloaded', () => this.isSearchBoxVisible = true);
     this.map.addListener('dragstart', () => {
-      this.isPointFormVisible = false;
       this.zone.run(() => this.cd.detectChanges());
     });
   }
@@ -94,7 +87,7 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  public cancelPointCreation(event: any): void{
+  public cancelPointCreation(event: any): void {
     this.isPointFormVisible = event;
     this.newPointMarker.setMap(null);
   }
@@ -124,12 +117,11 @@ export class MapComponent implements AfterViewInit {
   }
 
   private onRightClickByMap(event: any): void {
-    this.setupPointCreationFormCoordinates(event);
-    this.setMarkerOnMap(new LatLng(event.latLng.lat(), event.latLng.lng()));
-    this.newPoint = new Point(event.latLng.lat(), event.latLng.lng());
     this.geocoder.geocode({location: new LatLng(event.latLng.lat(), event.latLng.lng())},
       (results: any, status: any) => {
         if (status && results.length) {
+          this.setMarkerOnMap(new LatLng(event.latLng.lat(), event.latLng.lng()));
+          this.newPoint = new Point(event.latLng.lat(), event.latLng.lng());
           const fullAddress = results[0];
           this.isPointFormVisible = true;
           this.newPoint.setAddress(fullAddress.formatted_address);
@@ -162,7 +154,6 @@ export class MapComponent implements AfterViewInit {
 
   private onRightClickBySearchedPlaceMarker(place: any, event: any): void {
     this.isPointFormVisible = true;
-    this.setupPointCreationFormCoordinates(event);
     this.newPoint = new Point(event.latLng.lat(), event.latLng.lng());
     this.setupCountry(place);
   }
@@ -181,19 +172,4 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
-  private setupPointCreationFormCoordinates(event: any): void {
-    const nativeJSEvent = Object.values(event).find((elem: any) => elem instanceof MouseEvent) as MouseEvent;
-    if (nativeJSEvent.pageY + this.pointFormHeight >= getPageHeight()) {
-      this.pointFormPositionTop = getPageHeight() - this.pointFormHeight - this.pointFormPaddingTopBottom * 2;
-      this.setCenter(new LatLng(event.latLng.lat(), event.latLng.lng()));
-    } else {
-      this.pointFormPositionTop = nativeJSEvent.pageY;
-    }
-    if (nativeJSEvent.pageX + this.pointFormWidth >= getPageWidth()) {
-      this.pointFormPositionLeft = getPageWidth() - this.pointFormWidth - this.pointFormPaddingLeftRight * 2;
-      this.setCenter(new LatLng(event.latLng.lat(), event.latLng.lng()));
-    } else {
-      this.pointFormPositionLeft = nativeJSEvent.pageX;
-    }
-  }
 }
