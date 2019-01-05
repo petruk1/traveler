@@ -7,6 +7,16 @@ div {
   height: 100%;
 }
 
+.map-container {
+  position: relative;
+  .new-point-form {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+}
+
 .search {
   width: 400px;
   margin-top: 10px;
@@ -19,7 +29,7 @@ div {
   z-index: 2;
   transition: box-shadow .5s ease;
 
-  &:hover,&:focus {
+  &:hover, &:focus {
     box-shadow: 0 0 4px 0;
   }
   &::placeholder {
