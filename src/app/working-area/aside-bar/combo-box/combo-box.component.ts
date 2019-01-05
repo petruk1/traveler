@@ -12,12 +12,12 @@ export class ComboBoxComponent {
   public title = '';
   @Input()
   public items: Point[] = [];
+  @Input()
+  public selectedItem: Point;
   @Output()
   public itemClick: EventEmitter<Point> = new EventEmitter();
   public angleIcon = faAngleDown;
   public isListOpen = false;
-  @Input()
-  public selectedItem: Point;
 
   public onItemClick(point: Point): void {
     this.selectedItem = point;
